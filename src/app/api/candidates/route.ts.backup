@@ -48,15 +48,28 @@ async function getAirtableRecords(tableName: string) {
  */
 export async function GET() {
   try {
-    // Status Update is the working Airtable source for the recruiter dashboard.
-    // Do not change Airtable credentials or the candidate submission flow.
+    const candidateRecords = await getAirtableRecords(CANDIDATE_TABLE);
     const atsRecords = await getAirtableRecords(ATS_TABLE);
 
-    const candidates = atsRecords.map((record: any) => {
+    const atsByName = new Map<string, any>();
+
+    for (const record of atsRecords) {
+      const fields = record.fields || {};
+      const name = String(fields.Name || "").trim().toLowerCase();
+
+      if (name) {
+        atsByName.set(name, {
+          id: record.id,
+          ...fields,
+        });
+      }
+    }
+
+    const candidates = candidateRecords.map((record: any) => {
       const fields = record.fields || {};
 
       const name = String(fields.Name || "").trim();
-      const ats = fields;
+      const ats = atsByName.get(name.toLowerCase()) || {};
 
       return {
         id: record.id,
@@ -85,11 +98,6 @@ export async function GET() {
           "",
 
         experience: ats.Experience || "",
-        skills: ats.Skills || "",
-        skillsMatchScore:
-          ats["Skills Match Score"] ?? null,
-        languageFitScore:
-          ats["Language Fit Score"] ?? null,
 
         seniority: ats.Seniority || "",
         languageFit: ats["Language Fit"] || "",

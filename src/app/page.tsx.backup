@@ -5,7 +5,6 @@ import { ChangeEvent, FormEvent, useState } from "react";
 export default function CandidateApplication() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [area, setArea] = useState("");
   const [cv, setCv] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -57,16 +56,6 @@ export default function CandidateApplication() {
       return;
     }
 
-    if (!area) {
-      setError("Please select an area.");
-      return;
-    }
-
-    if (!area) {
-      setError("Please select an area.");
-      return;
-    }
-
     if (!cv) {
       setError("Please upload your CV.");
       return;
@@ -78,7 +67,6 @@ export default function CandidateApplication() {
       const formData = new FormData();
       formData.append("name", name.trim());
       formData.append("email", email.trim());
-      formData.append("area", area);
       formData.append("cv", cv);
 
       const response = await fetch("/api/candidates", {
@@ -205,31 +193,6 @@ export default function CandidateApplication() {
                 disabled={loading}
                 autoComplete="email"
               />
-            </div>
-
-            <div className="field">
-              <label htmlFor="area">Area</label>
-
-              <div className="select-wrapper">
-                <select
-                  id="area"
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  disabled={loading}
-                  required
-                >
-                  <option value="" disabled>
-                    Select an area
-                  </option>
-                  <option value="Operation">Operation</option>
-                  <option value="Talent">Talent</option>
-                  <option value="Creative">Creative</option>
-                  <option value="Content">Content</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Automation">Automation</option>
-                </select>
-                <span className="select-arrow">⌄</span>
-              </div>
             </div>
 
             <div className="field">
